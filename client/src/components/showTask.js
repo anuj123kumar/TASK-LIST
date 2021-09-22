@@ -16,12 +16,17 @@ import TextField from '@material-ui/core/TextField';
 
 
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     table: {
         minWidth: 650,
     },
-});
-
+    root: {
+      '& > *': {
+        margin: theme.spacing(1),
+        width: '25ch',
+      },
+    },
+}));
 
 
 
@@ -33,6 +38,7 @@ export default function ShowTask() {
     const [edit, setEdit ] = useState(false);
 
     const [ task , setTask] = useState();
+    const [id, setId] = useState();
 
     useEffect(() => {
         getAll();
@@ -46,16 +52,16 @@ export default function ShowTask() {
     }
 
     const UpdateTask = (id) => {
-        axios.put(`http://localhost:8000/tasks/update/${id}`, task).then( () => {
+        axios.put(`http://localhost:8000/tasks/update/${id.id}`, task).then( () => {
             window.location.reload(false);
         })
-        console.log("Bottonclick")
     }
 
     const onUpdateClick = (id) => {
-        const newTask = tasksList.filter(obj => obj._id === id)
+        const newTask =  tasksList.filter(obj => obj._id === id)
         console.log(newTask)
         setTask({...task, task: newTask[0].task})
+        setId({...id, id: id})
         setEdit(!edit)
     } 
 
@@ -78,6 +84,7 @@ export default function ShowTask() {
 
     
     const editComponent = () => {
+        
         return (
             <>
             <h2> Update Task </h2>
@@ -85,8 +92,8 @@ export default function ShowTask() {
                 <TextField id="outlined-basic" label="Task" variant="outlined" value = {task.task} onChange={(event) => {
                     setTask({ ...task, task: event.target.value})
                 }}/>
-    
-                <Button variant="contained" color="primary" onClick= {UpdateTask}>
+
+                <Button variant="contained" color="primary" onClick= {() => UpdateTask(id)}>
                     Update
                 </Button>
             </form>
@@ -99,13 +106,12 @@ export default function ShowTask() {
         <>
             { edit && editComponent() }
             <h2> All tasks</h2>
-            {JSON.stringify(task)}
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Tasks</TableCell>
-                            <TableCell align="right">Name</TableCell>
+                            <TableCell><h2>Tasks</h2></TableCell>
+                            <TableCell align="right"><h2>Actions</h2></TableCell>
                         </TableRow>
                     </TableHead>
                     { tasksList !== undefined && <TableBody>

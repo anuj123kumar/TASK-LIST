@@ -1,7 +1,4 @@
-const { findByIdAndUpdate } = require('../models/task')
-const task = require('../models/task')
 const Task = require('../models/task')
-
 
 exports.createTask = async (req, res) => {
     const task = req.body
@@ -30,9 +27,19 @@ exports.getTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
     const id = req.params.id;
-    const task = req.body;
-
-    await Task.findByIdAndUpdate(id, {task: task}, {new: true})
+    await Task.findByIdAndUpdate(
+        { _id: id},
+        { $set: req.body},
+        { new: true, useFindAndModify: false},
+        (err, updatedTask) => {
+            if(err){
+                return res.status(400).json({
+                    error: err
+                })
+            }
+            res.status(200).json({updatedTask})
+        }
+    )
     
 }
 
