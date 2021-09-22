@@ -5,11 +5,8 @@ const taskSchema = new Schema({
     task: {
         type: String,
         required: true,
-    },
-    completed: {
-        type: Boolean,
-        default: false,
-    },
+        unique: true
+    }
 });
 
-module.exports = mongoose.model("task", taskSchema);
+module.exports = mongoose.model("Task", taskSchema);
